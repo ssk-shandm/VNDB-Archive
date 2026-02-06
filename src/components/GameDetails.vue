@@ -7,7 +7,12 @@
           <n-grid-item>
             <!-- 图片 -->
             <div class="image-wrapper">
-              <img v-if="info.image" :src="info.image.url" class="game-image" alt="Cover" />
+              <GameImage
+                v-if="info.image"
+                :src="info.image.url"
+                :sexual="info.image.sexual"
+                class="game-image"
+              />
             </div>
           </n-grid-item>
           <n-grid-item>
@@ -66,9 +71,10 @@
 </template>
 
 <script setup lang="ts">
-import type { VGame } from '../src/api/vndb'
+import type { VGame } from '@/api/vndb'
 import GameCard from './GameCard.vue'
 import GameWaterfall from './GameWaterfall.vue'
+import GameImage from './GameImage.vue'
 
 defineProps<{ info: VGame }>()
 

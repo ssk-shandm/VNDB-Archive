@@ -41,7 +41,7 @@
 <script setup lang="ts">
 import { ref, nextTick, onActivated } from 'vue'
 import GameWaterfall from '../components/GameWaterfall.vue'
-import { searchData, type VGame } from '../src/api/vndb'
+import { searchData, type VGame } from '@/api/vndb'
 import GameCard from '../components/GameCard.vue'
 
 defineOptions({

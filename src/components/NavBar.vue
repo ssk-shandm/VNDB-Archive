@@ -9,29 +9,13 @@
 <script setup lang="ts">
 import { h, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { NIcon,type MenuOption } from 'naive-ui'
-import { SettingOne } from '@icon-park/vue-next'
-
-// 渲染图标函数
-function renderIcon(icon: any, props: any = {}) {
-  const iconProps = {
-    theme: 'outline',
-    fill: '#333',
-    ...props
-  }
-
-  return () => h(NIcon, null, { default: () => h(icon, iconProps) })
-}
+import type { MenuOption } from 'naive-ui'
 
 // 定义菜单项
 const menuOptions: MenuOption[] = [
   {
     label: () => h(RouterLink, { to: '/setting' }, { default: () => '设置' }),
     key: 'setting',
-    icon: renderIcon(SettingOne, {
-      theme: 'outline',
-      fill: '#333'
-    })
   }
 ]
 

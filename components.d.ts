@@ -11,7 +11,12 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    GameCard: typeof import('./src/components/GameCard.vue')['default']
+    GameDetails: typeof import('./src/components/GameDetails.vue')['default']
+    GameImage: typeof import('./src/components/GameImage.vue')['default']
+    GameWaterfall: typeof import('./src/components/GameWaterfall.vue')['default']
     NAlert: typeof import('naive-ui')['NAlert']
+    NavBar: typeof import('./src/components/NavBar.vue')['default']
     NButton: typeof import('naive-ui')['NButton']
     NCard: typeof import('naive-ui')['NCard']
     NConfigProvider: typeof import('naive-ui')['NConfigProvider']
@@ -27,6 +32,7 @@ declare module 'vue' {
     NResult: typeof import('naive-ui')['NResult']
     NSpace: typeof import('naive-ui')['NSpace']
     NSpin: typeof import('naive-ui')['NSpin']
+    NSwitch: typeof import('naive-ui')['NSwitch']
     NTag: typeof import('naive-ui')['NTag']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

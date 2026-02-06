@@ -1,19 +1,16 @@
 <template>
   <n-card :title="info.title" hoverable class="game-card">
     <template #cover>
-      <div>
-        <n-tag v-if="tag" type="success" size="small" class="corner-tag">
-          {{ tag }}
-        </n-tag>
-        <img v-if="info.image" :src="info.image.url" loading="lazy" @click="toDetails" />
-        <div v-else class="no-image" @click="toDetails">No Image</div>
+      <div class="card-cover">
+        <VImage :src="info.image?.url" :sexual="info.image?.sexual" lazy @click="toDetails" />
       </div>
     </template>
   </n-card>
 </template>
 
 <script setup lang="ts">
-import type { VGame } from '../src/api/vndb'
+import type { VGame } from '@/api/vndb'
+import VImage from '../components/GameImage.vue'
 import { useRouter } from 'vue-router'
 import { toRaw } from 'vue'
 
@@ -43,7 +40,7 @@ const toDetails = () => {
 .card-cover {
   position: relative;
   width: 100%;
- height: auto; 
+  height: auto;
   background: #f0f0f0;
   overflow: hidden;
 }

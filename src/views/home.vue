@@ -2,7 +2,7 @@
   <div class="container">
     <Transition name="slide-up">
       <div v-if="Ishow" class="homepage">
-        <img src="../src/assets/VNDBArchive.png" alt="homepage" class="homepage-image" />
+        <img src="@/assets/VNDBArchive.png" alt="homepage" class="homepage-image" />
       </div>
     </Transition>
     <Transition name="slide-up">

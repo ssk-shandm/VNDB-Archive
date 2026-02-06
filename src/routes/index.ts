@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import home from '../views/home.vue'
 import details from '../views/details.vue'
 import search from '../views/search.vue'
-import setting from '../views/setting.vue'
+import setting from '../views/settings.vue'
 
 const router = createRouter({
   history: createWebHistory(),

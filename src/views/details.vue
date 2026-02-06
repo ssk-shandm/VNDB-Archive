@@ -14,7 +14,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { searchData, type VGame } from '../src/api/vndb'
+import { searchData, type VGame } from '@/api/vndb'
 import GD from '../components/GameDetails.vue'
 
 const route = useRoute()
