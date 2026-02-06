@@ -13,13 +13,14 @@ export interface VImage {
 
 // 游戏信息
 export interface VGame {
-  id: string
+  id: number
   title: string
   lang: string
   released?: string
   rating?: number
   image?: VImage
   description?: string
+  developers?: Array<any>
 }
 
 /**

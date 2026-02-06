@@ -8,7 +8,7 @@
         @click="router.back()"
         style="font-size: 12px; position: absolute; left: 1vw; top: 1vh"
       >
-        ← Back
+        < Back
       </n-button>
 
       <div class="input-wrapper" :class="{ 'center-mode': Centered }">
