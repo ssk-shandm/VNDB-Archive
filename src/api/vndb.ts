@@ -11,12 +11,22 @@ export interface VImage {
   dims: [number, number]
 }
 
+// 关联游戏
+export interface VGameRelation {
+  id: string
+  relation: string
+  relation_official: boolean
+  title: string
+  image?: VImage
+}
+
 // 游戏信息
 export interface VGame {
   id: number
   title: string
-  lang: string
+  languages: string[]
   released?: string
+  relations?: VGameRelation[]
   rating?: number
   image?: VImage
   description?: string

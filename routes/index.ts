@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import home from '../views/home.vue'
 import details from '../views/details.vue'
 import search from '../views/search.vue'
+import setting from '../views/setting.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -20,6 +21,10 @@ const router = createRouter({
       path: '/search',
       name: 'Search',
       component: search
+    },{
+        path:'/setting',
+        name:'Setting',
+        component:setting
     }
   ]
 })

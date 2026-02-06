@@ -2,7 +2,11 @@
   <n-card :title="info.title" hoverable class="game-card">
     <template #cover>
       <div>
+        <n-tag v-if="tag" type="success" size="small" class="corner-tag">
+          {{ tag }}
+        </n-tag>
         <img v-if="info.image" :src="info.image.url" loading="lazy" @click="toDetails" />
+        <div v-else class="no-image" @click="toDetails">No Image</div>
       </div>
     </template>
   </n-card>
@@ -15,22 +19,55 @@ import { toRaw } from 'vue'
 
 const router = useRouter()
 
-const props = defineProps<{ info: VGame }>()
+const props = defineProps<{
+  info: VGame | any
+  tag?: string
+}>()
 
 // 跳转对应游戏页面，递交游戏数据
-const toDetails = ()=>{
-    router.push({
-    name: 'Details', 
-    params: { id: props.info.id }, 
-    state: { gameData: toRaw(props.info) as any } 
+const toDetails = () => {
+  router.push({
+    name: 'Details',
+    params: { id: props.info.id },
+    state: { gameData: toRaw(props.info) as any }
   })
 }
-
 </script>
 
 <style scoped>
 .game-card {
-  width: 80%;
-  height: auto;
+  break-inside: avoid;
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+.card-cover {
+  position: relative;
+  width: 100%;
+ height: auto; 
+  background: #f0f0f0;
+  overflow: hidden;
+}
+.card-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+.game-card:hover img {
+  transform: scale(1.05);
+}
+.corner-tag {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  z-index: 2;
+  opacity: 0.9;
+}
+.no-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: #ccc;
 }
 </style>
