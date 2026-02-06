@@ -1,7 +1,6 @@
 <template>
   <div class="container">
     <n-space vertical size="large">
-
       <div class="input-wrapper" :class="{ 'center-mode': Centered }">
         <n-input
           v-model:value="keyword"
@@ -15,11 +14,7 @@
 
       <n-spin :show="loading">
         <div class="container-card">
-          <GameWaterfall
-            ref="waterfallRef"
-            v-if="GList.length > 0"
-            :list="GList"
-          >
+          <GameWaterfall ref="waterfallRef" v-if="GList.length > 0" :list="GList">
             <template #item="{ item }">
               <GameCard :info="item" />
             </template>
@@ -75,22 +70,21 @@ const handleEnter = async () => {
     const query = {
       filters: ['search', '=', keyword.value],
       fields:
-        'title, released, rating, image.url, image.sexual, description, developers.name, languages, relations.id, relations.relation, relations.title, relations.relation_official, relations.image.url'
+        'title, released, rating, image.url, image.sexual, image.dims, description, developers.name, languages, relations.id, relations.relation, relations.title, relations.relation_official, relations.image.url, relations.image.sexual, relations.image.dims'
     }
     const response = await searchData(query)
     GList.value = response.results
-    
+
     if (GList.value.length === 0) {
       Searched.value = true
     }
-    
+
     // 数据更新后，等待 DOM 渲染完，刷新瀑布流
     nextTick(() => {
       if (waterfallRef.value) {
         waterfallRef.value.renderer?.()
       }
     })
-
   } catch (error) {
     console.error('error:', error)
   } finally {
@@ -107,7 +101,7 @@ const handleEnter = async () => {
 .container-card {
   margin-top: 20px;
   position: relative;
-  z-index: 1; 
+  z-index: 1;
 }
 
 .input-wrapper {

@@ -1,8 +1,7 @@
 <template>
   <div class="container">
-
     <div class="GameContent">
-      <GD v-if="gameInfo" :info="gameInfo" />
+      <GameDetails v-if="gameInfo" :info="gameInfo" />
 
       <n-alert v-else-if="NODATA" title="Error" type="error" style="margin-top: 20px">
         没有获取到数据
@@ -15,7 +14,7 @@
 import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { searchData, type VGame } from '@/api/vndb'
-import GD from '../components/GameDetails.vue'
+import GameDetails from '../components/GameDetails.vue'
 
 const route = useRoute()
 const gameInfo = ref<VGame | null>(null)
@@ -27,7 +26,7 @@ const fetchGameData = async (id: string) => {
     const query = {
       filters: ['id', '=', id],
       fields:
-        'title, released, rating, image.url, image.sexual, description, developers.name, languages, relations.id, relations.relation, relations.title, relations.relation_official, relations.image.url'
+        'title, released, rating, image.url, image.sexual, description, developers.name, languages, relations.id, relations.relation, relations.title, relations.relation_official, relations.image.url, relations.image.sexual, relations.image.dims'
     }
     const res = await searchData(query)
     if (res.results.length > 0) {
@@ -43,11 +42,19 @@ const fetchGameData = async (id: string) => {
 }
 
 onMounted(() => {
-  // 获取 state 中的游戏数据
+  // 从 state 中获取数据
   const GameData = history.state.gameData as VGame
+  const id = route.params.id as string
 
-  if (GameData && GameData.description) {
+  // 检查数据完整性(NSFW 图片标记)
+  const isDataIncomplete = GameData?.relations?.some(
+    r => r.image && r.image.sexual === undefined
+  )
+  if (GameData && GameData.description && !isDataIncomplete) {
     gameInfo.value = GameData
+  } else if (id) {
+    // 异常状态或数据不完整时重新获取数据
+    fetchGameData(id)
   } else {
     NODATA.value = true
   }

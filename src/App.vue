@@ -1,28 +1,23 @@
 <template>
-  <n-config-provider>
+  <n-config-provider :theme-overrides="themeOverrides">
     <n-message-provider>
       <n-dialog-provider>
         
-        <n-layout position="absolute">
+        <div 
+          class="global-bg" 
+          :style="bgStyle"
+        ></div>
+
+        <n-layout position="absolute" style="background: transparent;">
           
           <NavBar />
 
           <n-layout-content 
             content-style="min-height: calc(100vh - 4vh); display: flex; flex-direction: column; position: relative;"
             :native-scrollbar="false" 
+            style="background: transparent;"
           >
             
-            <n-button
-              v-if="showBackButton"
-              strong
-              secondary
-              type="success"
-              @click="router.back()"
-              class="back"
-            >
-              < Back
-            </n-button>
-
             <router-view v-slot="{ Component }">
               <keep-alive include="Search">
                 <component :is="Component" />
@@ -40,14 +35,35 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
 import NavBar from '@/components/NavBar.vue'
+import { settings } from '@/store/settings'
+import type { GlobalThemeOverrides } from 'naive-ui'
 
-const router = useRouter()
-const route = useRoute()
+// 动态背景样式
+const bgStyle = computed(() => {
+  if (settings.backgroundImage) {
+    return {
+      backgroundImage: `url(${settings.backgroundImage})`,
+      opacity: settings.backgroundOpacity 
+    }
+  }
+  return { opacity: 1 } 
+})
 
-// 主页不留返回按钮
-const showBackButton = computed(() => route.path !== '/')
+// 强制所有卡片背景透明
+const themeOverrides = computed<GlobalThemeOverrides>(() => {
+  return {
+    Card: {
+      color: 'rgba(255, 255, 255, 0)', 
+      borderColor: 'transparent',
+      titleTextColor: '#333', 
+      textColor: '#333'
+    },
+    Layout: {
+      color: 'transparent'
+    }
+  }
+})
 </script>
 
 <style>
@@ -55,12 +71,23 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
+  background-color: #ffffff; 
 }
-.back {
-  font-size: 12px;
-  position: absolute;
-  left: 1vw;
-  top: 1vh;
-  z-index: 999; 
+
+.global-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  transition: opacity 0.2s ease, background-image 0.5s ease;
+}
+
+.details-container, .game-card {
+  background: transparent !important;
 }
 </style>

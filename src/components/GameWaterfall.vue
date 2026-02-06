@@ -9,6 +9,7 @@
       800: { rowPerView: 3 },
       500: { rowPerView: 2 }
     }"
+    background-color="transparent"
   >
     <template #item="{ item }">
       <slot name="item" :item="item"></slot>
@@ -27,8 +28,18 @@ defineProps<{
 
 const waterfallInnerRef = ref<any>(null)
 
-// 暴露 renderer 方法
 defineExpose({
   renderer: () => waterfallInnerRef.value?.renderer()
 })
 </script>
+
+<style>
+.waterfall-list {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+.waterfall-item {
+  background: transparent !important;
+}
+</style>

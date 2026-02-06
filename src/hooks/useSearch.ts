@@ -31,22 +31,21 @@ export function useSearch() {
       const query = {
         filters: ['search', '=', keyword.value],
         fields:
-          'title, released, rating, image.url, image.sexual, description, developers.name, languages, relations.id, relations.relation, relations.title, relations.relation_official, relations.image.url'
+          'title, released, rating, image.url, image.sexual, image.dims, description, developers.name, languages, relations.id, relations.relation, relations.title, relations.relation_official, relations.image.url, relations.image.sexual, relations.image.dims'
       }
       const response = await searchData(query)
       GList.value = response.results
-      
+
       if (GList.value.length === 0) {
         Searched.value = true
       }
-      
+
       // 数据更新后，等待 DOM 渲染完，刷新瀑布流
       nextTick(() => {
         if (waterfallRef.value) {
           waterfallRef.value.renderer?.()
         }
       })
-
     } catch (error) {
       console.error('error:', error)
     } finally {

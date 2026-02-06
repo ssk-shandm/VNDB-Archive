@@ -1,8 +1,19 @@
 <template>
-  <n-card :title="info.title" hoverable class="game-card">
+  <n-card
+    :title="info.title"
+    :header-style="{ padding: '8px 9px', fontSize: '20px' }"
+    hoverable
+    class="game-card"
+  >
     <template #cover>
       <div class="card-cover">
-        <VImage :src="info.image?.url" :sexual="info.image?.sexual" lazy @click="toDetails" />
+        <GameImage
+          :src="info.image?.url"
+          :sexual="info.image?.sexual"
+          :dims="info.image?.dims"
+          lazy
+          @click="toDetails"
+        />
       </div>
     </template>
   </n-card>
@@ -10,7 +21,7 @@
 
 <script setup lang="ts">
 import type { VGame } from '@/api/vndb'
-import VImage from '../components/GameImage.vue'
+import GameImage from './GameImage.vue'
 import { useRouter } from 'vue-router'
 import { toRaw } from 'vue'
 
@@ -21,7 +32,7 @@ const props = defineProps<{
   tag?: string
 }>()
 
-// 跳转对应游戏页面，递交游戏数据
+// 跳转到详情页
 const toDetails = () => {
   router.push({
     name: 'Details',
@@ -33,9 +44,10 @@ const toDetails = () => {
 
 <style scoped>
 .game-card {
+  border: 1px solid #4f4c4c;
   break-inside: avoid;
-  margin-bottom: 12px;
   cursor: pointer;
+  backdrop-filter: blur(5px);
 }
 .card-cover {
   position: relative;
