@@ -1,9 +1,9 @@
 <template>
-  <div class="container">
+  <div class="container" :style="{ opacity: isReady ? 1 : 0, transition: 'opacity 0.2s ease' }">
     <div class="GameContent">
       <GameDetails v-if="gameInfo" :info="gameInfo" />
 
-      <n-alert v-else-if="NODATA" title="Error" type="error" style="margin-top: 20px">
+      <n-alert v-else-if="noData" title="Error" type="error" style="margin-top: 20px">
         没有获取到数据
       </n-alert>
     </div>
@@ -11,62 +11,106 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, onActivated, watch, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import { searchData, type VGame } from '@/api/vndb'
 import GameDetails from '../components/GameDetails.vue'
 
 const route = useRoute()
 const gameInfo = ref<VGame | null>(null)
-const NODATA = ref(false)
+const noData = ref(false)
+const isReady = ref(false) 
 
-// 根据 ID 从 API 中获取数据
+// 强制滚动到顶部
+const forceScrollTop = () => {
+  const scrollContainer = 
+    document.querySelector('.n-layout-scroll-container') || 
+    document.querySelector('.n-scrollbar-container') ||
+    document.documentElement 
+
+  if (scrollContainer) {
+    scrollContainer.scrollTop = 0
+    scrollContainer.scrollTo({ top: 0, behavior: 'instant' }) 
+  }
+  window.scrollTo(0, 0)
+}
+
+const resetAndShow = () => {
+  isReady.value = false 
+
+  forceScrollTop()
+
+  setTimeout(() => {
+    forceScrollTop() 
+    isReady.value = true 
+  }, 100)
+}
+
 const fetchGameData = async (id: string) => {
   try {
     const query = {
-      filters: ['id', '=', id],
-      fields:
-        'title, released, rating, image.url, image.sexual, description, developers.name, languages, relations.id, relations.relation, relations.title, relations.relation_official, relations.image.url, relations.image.sexual, relations.image.dims'
+      filters: ['id', '=', id]
     }
     const res = await searchData(query)
     if (res.results.length > 0) {
       gameInfo.value = res.results[0]
-      NODATA.value = false
+      noData.value = false
+      
+      nextTick(() => {
+        resetAndShow()
+      })
     } else {
-      NODATA.value = true
+      noData.value = true
+      isReady.value = true
     }
   } catch (error) {
     console.error(error)
-    NODATA.value = true
+    noData.value = true
+    isReady.value = true
+  }
+}
+
+// 初始化逻辑提取
+const initPage = () => {
+  isReady.value = false
+  forceScrollTop()
+
+  const cachedData = history.state.gameData as VGame
+  const id = route.params.id as string
+
+  // 检查缓存
+  const isDataIncomplete = cachedData?.relations?.some(
+    r => r.image && r.image.sexual === undefined
+  )
+
+  if (cachedData && cachedData.description && !isDataIncomplete) {
+    gameInfo.value = cachedData
+    nextTick(() => {
+      resetAndShow()
+    })
+  } else if (id) {
+    fetchGameData(id)
+  } else {
+    noData.value = true
+    isReady.value = true
   }
 }
 
 onMounted(() => {
-  // 从 state 中获取数据
-  const GameData = history.state.gameData as VGame
-  const id = route.params.id as string
-
-  // 检查数据完整性(NSFW 图片标记)
-  const isDataIncomplete = GameData?.relations?.some(
-    r => r.image && r.image.sexual === undefined
-  )
-  if (GameData && GameData.description && !isDataIncomplete) {
-    gameInfo.value = GameData
-  } else if (id) {
-    // 异常状态或数据不完整时重新获取数据
-    fetchGameData(id)
-  } else {
-    NODATA.value = true
-  }
+  initPage()
 })
 
-// 监听 ID 变化
+onActivated(() => {
+  initPage()
+})
+
+// 监听同路由参数变化
 watch(
   () => route.params.id,
   newId => {
     if (newId) {
       gameInfo.value = null
-      fetchGameData(newId as string)
+      initPage()
     }
   }
 )
@@ -77,8 +121,8 @@ watch(
   position: relative;
   width: 100%;
   padding: 5vh 2vw 0 2vw;
-
   box-sizing: border-box;
+  overflow-anchor: none; 
 }
 
 .GameContent {

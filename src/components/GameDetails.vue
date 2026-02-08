@@ -4,6 +4,7 @@
 
     <div class="details-container">
       <n-grid y-gap="80" cols="1" responsive="screen">
+        <!-- 上半部分 -->
         <n-grid-item class="animate-card">
           <n-grid y-gap="24" cols="1 m:24" responsive="screen">
             <n-grid-item span="24 m:9">
@@ -59,6 +60,7 @@
           </n-grid>
         </n-grid-item>
 
+        <!-- 下半部分 -->
         <n-grid-item v-if="info.relations && info.relations.length" class="animate-card delay-200">
           <div class="section-header">
             <h3 class="section-title-large">相关游戏</h3>

@@ -4,24 +4,30 @@ import { searchData, type VGame } from '../api/vndb'
 export function useSearch() {
   const GList = ref<VGame[]>([])
   const loading = ref(false)
-  const Centered = ref(true)
-  const Searched = ref(false)
+  const Centered = ref(true) 
+  const Searched = ref(false) 
   const keyword = ref('')
-
+  
   // 拿到瀑布流组件的实例
   const waterfallRef = ref<any>(null)
 
-  // 刷新瀑布流布局
+  // 刷新瀑布流布局的方法
+  const refreshLayout = () => {
+    nextTick(() => {
+      waterfallRef.value?.renderer?.()
+    })
+  }
+
+  // 页面激活时刷新布局
   onActivated(() => {
-    if (waterfallRef.value && GList.value.length > 0) {
-      nextTick(() => {
-        waterfallRef.value.renderer?.()
-      })
+    if (GList.value.length > 0) {
+      refreshLayout()
     }
   })
 
-  const handleEnter = async () => {
-    if (!keyword.value.trim()) return
+  const handleSearch = async () => {
+    const queryStr = keyword.value.trim()
+    if (!queryStr) return
 
     Centered.value = false
     loading.value = true
@@ -29,10 +35,9 @@ export function useSearch() {
 
     try {
       const query = {
-        filters: ['search', '=', keyword.value],
-        fields:
-          'title, released, rating, image.url, image.sexual, image.dims, description, developers.name, languages, relations.id, relations.relation, relations.title, relations.relation_official, relations.image.url, relations.image.sexual, relations.image.dims'
+        filters: ['search', '=', queryStr]
       }
+      
       const response = await searchData(query)
       GList.value = response.results
 
@@ -40,14 +45,10 @@ export function useSearch() {
         Searched.value = true
       }
 
-      // 数据更新后，等待 DOM 渲染完，刷新瀑布流
-      nextTick(() => {
-        if (waterfallRef.value) {
-          waterfallRef.value.renderer?.()
-        }
-      })
+      // 刷新瀑布流
+      refreshLayout()
     } catch (error) {
-      console.error('error:', error)
+      console.error('Search error:', error)
     } finally {
       loading.value = false
     }
@@ -60,6 +61,7 @@ export function useSearch() {
     Searched,
     keyword,
     waterfallRef,
-    handleEnter
+    handleSearch,
+    refreshLayout
   }
 }

@@ -13,7 +13,7 @@
           <NavBar />
 
           <n-layout-content 
-            content-style="min-height: calc(100vh - 4vh); display: flex; flex-direction: column; position: relative;"
+            content-style="min-height: calc(100vh - 5vh); display: flex; flex-direction: column; position: relative;"
             :native-scrollbar="false" 
             style="background: transparent;"
           >

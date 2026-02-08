@@ -28,7 +28,7 @@ import { toRaw } from 'vue'
 const router = useRouter()
 
 const props = defineProps<{
-  info: VGame | any
+  info: VGame
   tag?: string
 }>()
 

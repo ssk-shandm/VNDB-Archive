@@ -1,5 +1,25 @@
 export const api_url = 'https://api.vndb.org/kana/vn'
 
+// 所有字段
+export const VN_FIELDS = [
+  'title',
+  'released',
+  'rating',
+  'image.url',
+  'image.sexual',
+  'image.dims',
+  'description',
+  'developers.name',
+  'languages',
+  'relations.id',
+  'relations.relation',
+  'relations.title',
+  'relations.relation_official',
+  'relations.image.url',
+  'relations.image.sexual',
+  'relations.image.dims'
+].join(', ')
+
 /**
  * 部分内容定义
  */
@@ -20,6 +40,12 @@ export interface VGameRelation {
   image?: VImage
 }
 
+// 开发者
+export interface VDeveloper {
+  id: string
+  name: string
+}
+
 // 游戏信息
 export interface VGame {
   id: number
@@ -30,16 +56,16 @@ export interface VGame {
   rating?: number
   image?: VImage
   description?: string
-  developers?: Array<any>
+  developers?: VDeveloper[]
 }
 
 /**
- *  接口定义
+ * 接口定义
  */
 // 输出数据
 export interface VQuery {
   filters: Array<any>
-  fields: string
+  fields?: string 
 }
 
 // 输入数据
@@ -50,22 +76,22 @@ export interface VResponse {
 }
 
 /**
- * 数据处理
- */
-
-
-/**
  * 发送请求
  */
 export async function searchData(query: VQuery): Promise<VResponse> {
+  const body = {
+    ...query,
+    fields: query.fields || VN_FIELDS
+  }
+
   const response = await fetch(api_url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(query)
+    body: JSON.stringify(body)
   })
 
   if (!response.ok) {
-    throw new Error()
+    throw new Error(`API Error: ${response.statusText}`)
   }
 
   const data = await response.json()
