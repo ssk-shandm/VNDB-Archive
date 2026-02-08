@@ -10,6 +10,14 @@
           <n-switch v-model:value="settings.showNSFW" />
         </n-space>
 
+        <n-space justify="space-between" align="center">
+          <div>
+            <div class="setting-title">显示权重小于2.9的标签</div>
+            <div class="setting-desc">开启后显示权重小于2.9大于1的标签</div>
+          </div>
+          <n-switch v-model:value="settings.showLowWeightTags" />
+        </n-space>
+
         <n-divider />
 
         <n-space vertical>
@@ -54,9 +62,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { settings } from '@/store/settings'
-import { useMessage } from 'naive-ui'
 
-const message = useMessage()
 const fileInputRef = ref<HTMLInputElement | null>(null)
 
 const triggerFileSelect = () => {
@@ -69,17 +75,12 @@ const handleFileSelect = (event: Event) => {
 
   if (!file) return
 
-  if (file.size > 3 * 1024 * 1024) {
-    message.warning('图片过大，建议使用 3MB 以内的图片')
-  }
-
   const reader = new FileReader()
 
   reader.onload = e => {
     const result = e.target?.result as string
     if (result) {
       settings.backgroundImage = result
-      message.success('背景设置成功！')
     }
   }
 
@@ -89,7 +90,6 @@ const handleFileSelect = (event: Event) => {
 
 const clearBackground = () => {
   settings.backgroundImage = ''
-  message.success('已恢复默认背景')
 }
 </script>
 

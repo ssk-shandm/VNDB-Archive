@@ -26,6 +26,10 @@ defineProps<{
   list: any[]
 }>()
 
+defineSlots<{
+  item(props: { item: any }): any
+}>()
+
 const waterfallInnerRef = ref<any>(null)
 
 defineExpose({

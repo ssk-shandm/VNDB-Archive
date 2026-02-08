@@ -11,6 +11,9 @@ export const VN_FIELDS = [
   'description',
   'developers.name',
   'languages',
+  'tags.name', 
+  'tags.rating', 
+  'tags.id', 
   'relations.id',
   'relations.relation',
   'relations.title',
@@ -29,6 +32,13 @@ export interface VImage {
   url: string
   sexual: number
   dims: [number, number]
+}
+
+// 标签
+export interface VTag {
+  id: string
+  name: string
+  rating: number
 }
 
 // 关联游戏
@@ -52,6 +62,7 @@ export interface VGame {
   title: string
   languages: string[]
   released?: string
+  tags?: VTag[]
   relations?: VGameRelation[]
   rating?: number
   image?: VImage
@@ -65,7 +76,7 @@ export interface VGame {
 // 输出数据
 export interface VQuery {
   filters: Array<any>
-  fields?: string 
+  fields?: string
 }
 
 // 输入数据

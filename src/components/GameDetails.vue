@@ -1,10 +1,7 @@
 <template>
   <div class="details-wrapper">
-    <div class="ambient-background" :style="bgStyle"></div>
-
     <div class="details-container">
-      <n-grid y-gap="80" cols="1" responsive="screen">
-        <!-- 上半部分 -->
+      <n-grid y-gap="40" cols="1" responsive="screen">
         <n-grid-item class="animate-card">
           <n-grid y-gap="24" cols="1 m:24" responsive="screen">
             <n-grid-item span="24 m:9">
@@ -60,10 +57,37 @@
           </n-grid>
         </n-grid-item>
 
-        <!-- 下半部分 -->
+        <n-grid-item v-if="sortedTags.length > 0" class="animate-card delay-100">
+          <div class="section-header-wrapper">
+            <div class="section-header">
+              <h3 class="section-title-large">标签 ({{ sortedTags.length }})</h3>
+            </div>
+          </div>
+
+          <div class="tags-card">
+            <n-space :size="[8, 12]">
+              <n-tag
+                v-for="tag in sortedTags"
+                :key="tag.id"
+                round
+                :bordered="false"
+                size="small"
+                class="game-tag"
+              >
+                {{ tag.name }}
+                <template #avatar>
+                  <span class="tag-score">{{ tag.rating.toFixed(1) }}</span>
+                </template>
+              </n-tag>
+            </n-space>
+          </div>
+        </n-grid-item>
+
         <n-grid-item v-if="info.relations && info.relations.length" class="animate-card delay-200">
-          <div class="section-header">
-            <h3 class="section-title-large">相关游戏</h3>
+          <div class="section-header-wrapper">
+            <div class="section-header">
+              <h3 class="section-title-large">相关游戏</h3>
+            </div>
           </div>
           <GameWaterfall ref="waterfall" :list="info.relations">
             <template #item="{ item }">
@@ -79,6 +103,7 @@
 <script setup lang="ts">
 import { ref, nextTick, onMounted, computed } from 'vue'
 import type { VGame } from '@/api/vndb'
+import { settings } from '@/store/settings'
 import GameCard from './GameCard.vue'
 import GameWaterfall from './GameWaterfall.vue'
 import GameImage from './GameImage.vue'
@@ -87,10 +112,12 @@ const props = defineProps<{ info: VGame }>()
 
 const waterfall = ref<any>(null)
 
-// 动态背景样式
-const bgStyle = computed(() => {
-  const url = props.info.image?.url
-  return url ? { backgroundImage: `url(${url})` } : { backgroundColor: '#f5f5f5' }
+// 动态标签排序与过滤
+const sortedTags = computed(() => {
+  if (!props.info.tags) return []
+  const threshold = settings.showLowWeightTags ? 1.0 : 2.9
+
+  return props.info.tags.filter(t => t.rating >= threshold).sort((a, b) => b.rating - a.rating)
 })
 
 // 瀑布流布局重新渲染
@@ -110,7 +137,6 @@ const realDescription = (text: string) => {
     .replace(/\[\/?(?:spoiler|quote)[^\]]*\]/g, '')
 }
 
-// 语言代码映射表
 const langMap: Record<string, string> = {
   ja: '日语',
   en: '英语',
@@ -135,7 +161,6 @@ const langMap: Record<string, string> = {
   ar: '阿拉伯语'
 }
 
-// 关联类型映射表
 const relationMap: Record<string, string> = {
   seq: '续作',
   preq: '前作',
@@ -148,7 +173,6 @@ const relationMap: Record<string, string> = {
   alt: '不同版本'
 }
 
-// 语言数组格式化
 const formatLanguages = (codes: string[]) => {
   if (!codes) return ''
   return codes.map(code => langMap[code] || code).join(', ')
@@ -156,22 +180,6 @@ const formatLanguages = (codes: string[]) => {
 </script>
 
 <style scoped>
-.ambient-background {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 0;
-  background-size: cover;
-  background-position: center;
-  filter: blur(60px) brightness(0.9) opacity(0.5);
-  transform: scale(1.1);
-  pointer-events: none;
-  transition: all 0.5s ease;
-  background-color: #fff;
-}
-
 .details-wrapper {
   position: relative;
 }
@@ -190,6 +198,30 @@ const formatLanguages = (codes: string[]) => {
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.tags-card {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(20px);
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.game-tag {
+  font-weight: 500;
+  cursor: default;
+  transition: all 0.2s;
+}
+
+.game-tag:hover {
+  transform: translateY(-2px);
+}
+
+.tag-score {
+  font-size: 0.8em;
+  opacity: 0.8;
+  margin-right: 2px;
 }
 
 .image-wrapper {
@@ -227,9 +259,12 @@ const formatLanguages = (codes: string[]) => {
   flex-wrap: wrap;
 }
 
-.section-header {
+.section-header-wrapper {
   margin-bottom: 16px;
-  margin-left: 4vw;
+  margin-left: 10px;
+}
+
+.section-header {
   display: inline-block;
   background: rgba(255, 255, 255, 0.8);
   padding: 4px 16px;
@@ -265,8 +300,12 @@ const formatLanguages = (codes: string[]) => {
   animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+.delay-100 {
+  animation-delay: 0.1s;
+}
+
 .delay-200 {
-  animation-delay: 0.15s;
+  animation-delay: 0.2s;
 }
 
 @keyframes slideUpFade {
